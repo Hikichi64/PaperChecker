@@ -35,6 +35,7 @@ if not GEMINI_API_KEY or not SLACK_WEBHOOK_URL:
 BATCH_SIZE = 100               # AIに一度に送信する論文数
 HISTORY_FILE = "checked_history.txt"  # 既読論文リスト
 MODEL_NAME = "gemini-2.5-flash"       # Geminiモデル
+MAX_HISTORY_LINES = 5000
 
 # アクセス集中回避設定
 STARTUP_RANDOM_DELAY_MINUTES = 1
@@ -90,10 +91,27 @@ def load_history() -> Set[str]:
         return set(line.strip() for line in f)
 
 def save_history(new_links: List[str]):
-    """新しくチェックした論文のURLをファイルに追記保存する"""
-    with open(HISTORY_FILE, "a") as f:
-        for link in new_links:
-            f.write(f"{link}\n")
+    """
+    新しくチェックした論文のURLを保存する。
+    MAX_HISTORY_LINES を超えた場合、古い記録から削除する（ローテーション保存）。
+    """
+    # 1. 既存の履歴をすべて読み込む（順序を保持するためリストで読む）
+    lines = []
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r") as f:
+            lines = [line.strip() for line in f.readlines() if line.strip()]
+
+    # 2. 新しいリンクを末尾に追加
+    lines.extend(new_links)
+
+    # 3. 上限を超えていたら、先頭（古いもの）を削除して、末尾（最新）を残す
+    if len(lines) > MAX_HISTORY_LINES:
+        lines = lines[-MAX_HISTORY_LINES:]
+
+    # 4. ファイルを「上書きモード(w)」で保存し直す
+    with open(HISTORY_FILE, "w") as f:
+        for line in lines:
+            f.write(f"{line}\n")
 
 def clean_text(text: str) -> str:
     """HTMLタグ除去・空白整理"""
