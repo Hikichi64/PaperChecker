@@ -14,7 +14,6 @@ https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=sciadv
 
 # --- PNAS ---
 https://www.pnas.org/action/showFeed?type=etoc&feed=rss&jc=pnas
-https://academic.oup.com/pnasnexus/rss/current
 
 # --- Elsevier (ScienceDirect) ---
 https://rss.sciencedirect.com/publication/science/0012821X
@@ -43,6 +42,6 @@ https://iopscience.iop.org/journal/rss/2632-3338
 https://iopscience.iop.org/journal/rss/3049-4753
 
 # --- Others ---
-https://onlinelibrary.wiley.com/feed/14724669/most-recent # Geobiology
-https://www.liebertpub.com/action/showFeed?type=etoc&feed=rss&jc=ast # Astrobiology
-https://ajsonline.org/feed # AJS
+https://onlinelibrary.wiley.com/feed/14724669/most-recent
+https://www.liebertpub.com/action/showFeed?type=etoc&feed=rss&jc=ast
+https://ajsonline.org/feed
