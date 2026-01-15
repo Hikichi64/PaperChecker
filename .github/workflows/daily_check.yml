@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 全履歴を取得（rebaseに必要）
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -28,6 +30,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests feedparser python-dotenv google-genai
 
+      - name: Pull latest changes
+        # リモートの最新変更を取得（競合を避けるため）
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git rebase origin/main
+
       - name: Run Paper Checker
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -38,9 +48,7 @@ jobs:
       - name: Keep history (Commit changes)
         # 既読履歴(checked_history.txt)を保存して次回に引き継ぐ
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main
           git add checked_history.txt
           git diff --quiet && git diff --staged --quiet || git commit -m "Update history"
-          git push
+          git push origin main
+
